@@ -1053,12 +1053,12 @@
           };
         }
       },
-       {
+        {
     topic: 6,
     difficulty: "easy",
-    type: "equation",
+    type: "numeric_multi",  // changed type to numeric_multi
     question: function() {
-      // Generate a dynamic spring constant k (in N/cm) as a number between 0.3 and 0.5
+      // Generate a dynamic spring constant k (in N/cm) between 0.3 and 0.5
       const k_num = 0.3 + Math.random() * 0.2; 
       // Generate a dynamic x-intercept L0 between 0 and 5 cm
       const L0 = Math.random() * 5;
@@ -1068,39 +1068,39 @@
       // Part (a): The spring constant answer (displayed in N/cm)
       const answerPart1 = k_num.toFixed(2) + " N/cm";
       
-      // Part (b): Calculate elastic potential energy using:
-      //   x (in cm) = F_applied/k_num  -> convert x (cm) to meters: x_m = (F_applied/k_num)/100
-      //   k in SI units = k_num * 100 (N/m)
-      //   Elastic energy: E = ½ * (k in N/m) * (x in m)² = F_applied²/(200*k_num)
-      const energy = (F_applied * F_applied / (200 * k_num)).toFixed(2);
-      const answerPart2 = energy + " J";
+      // Part (b):
+      // Calculate extension in cm: x_cm = F_applied / k_num.
+      // Convert extension to meters: x_m = x_cm / 100.
+      // Convert spring constant to SI units: k_SI = k_num * 100 (N/m).
+      // Then, elastic energy E = ½ * k_SI * (x_m)².
+      const x_cm = F_applied / k_num;
+      const x_m = x_cm / 100;
+      const k_SI = k_num * 100;
+      const energy = 0.5 * k_SI * (x_m * x_m);
+      const answerPart2 = energy.toFixed(2) + " J";
       
       const answerCombined = [answerPart1, answerPart2];
       
-      // Model answer for part (a)
-      const modelAnswerPart1 = `Hooke's Law gives F = k(L - L₀). The line’s gradient equals the spring constant. For this graph, k = ${k_num.toFixed(2)} N/cm.`;
-      
-      // Model answer for part (b)
-      const x_cm = (F_applied / k_num).toFixed(2);
-      const x_m = (F_applied / k_num / 100).toFixed(4);
-      const k_SI = (k_num * 100).toFixed(2);
-      const modelAnswerPart2 = `When a force of ${F_applied} N is applied, the extension is x = F/k = ${x_cm} cm (${x_m} m). Converting the spring constant to SI units gives ${k_SI} N/m, so the elastic potential energy is E = ½ · k_SI · (x_m)² ≈ ${energy} J.`;
+      // Model answers:
+      const modelAnswerPart1 = `Answer (a): Using Hooke's Law, F = k(L - L₀), the gradient of the graph gives k. For this graph, k = ${k_num.toFixed(2)} N/cm.`;
+      const modelAnswerPart2 = `Answer (b): With F = ${F_applied} N, the extension is x = F/k = ${x_cm.toFixed(2)} cm (${x_m.toFixed(4)} m). Converting k to SI units gives k = ${k_SI.toFixed(2)} N/m so the elastic potential energy is E = ½·k·x² ≈ ${energy.toFixed(2)} J.`;
       
       const modelAnswerCombined = [modelAnswerPart1, modelAnswerPart2];
       
       // Create a unique canvas ID for the dynamic chart
       const canvasId = "springChart_" + Math.floor(Math.random() * 100000);
+      // Build the HTML for the graph
       const imageHtml = `<canvas id="${canvasId}" width="600" height="400"></canvas>`;
       
-      // Increase timeout delay (700 ms) to ensure the canvas is rendered
+      // Delay drawing the chart to ensure the canvas is in the DOM
       setTimeout(() => {
         drawSpringChart(canvasId, k_num, L0);
       }, 700);
       
       return {
-        text: `A force vs. extension graph for a spring is shown below. The graph follows Hooke’s Law: F = k(L - L₀), where k is the spring constant and L₀ is the extension at which the force becomes zero.
+        text: `A force vs. extension graph for a spring is shown below. It follows Hooke’s Law: F = k(L - L₀), where k is the spring constant and L₀ is the extension at which force becomes zero.
 (a) Determine the spring constant k from the graph.
-(b) Determine the elastic potential energy stored in the spring when the applied force is ${F_applied} N.`,
+(b) Determine the elastic potential energy stored when the applied force is ${F_applied} N.`,
         answer: answerCombined,
         modelAnswer: modelAnswerCombined,
         image: imageHtml
@@ -1943,7 +1943,9 @@
         q.answer = built.answer;
         q.modelAnswer = built.modelAnswer;
         q.image = built.image || null;
-      }
+      } else{
+      q.text = q.question;
+      }      
       document.getElementById("diagramContainer").innerHTML = "";
       document.getElementById("answerInputs").innerHTML = "";
       document.getElementById("feedback").innerText = "";
