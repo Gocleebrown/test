@@ -1,4 +1,4 @@
--<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -76,7 +76,7 @@
   <div id="score-box">Score: <span id="score">0</span></div>
   <div id="question-box"></div>
   
-  <!-- Container for dynamic diagrams (currently not used) -->
+  <!-- Container for dynamic diagrams -->
   <div id="diagramContainer"></div>
   
   <!-- Container for answer inputs -->
@@ -120,8 +120,9 @@
     function getRandom(arr) {
       return arr[Math.floor(Math.random() * arr.length)];
     }
-  /* ----------------------------------------------------
-       DRAW SPRING CHART FUNCTION (using Chart.js)
+
+    /* ----------------------------------------------------
+         DRAW SPRING CHART FUNCTION (using Chart.js)
     ---------------------------------------------------- */
     function drawSpringChart(canvasId, k, L0) {
       const canvas = document.getElementById(canvasId);
@@ -130,8 +131,7 @@
       const dataPoints = [];
       for (let L = 0; L <= MAX_L; L += 1) {
         // Calculate force from Hooke's Law: F = k * (L - L0)
-        // (Note: This may be negative if L < L0; you may choose to clamp it if needed)
-        const F = k * (L - L0);
+        const F = Math.max(0, k * (L - L0));
         dataPoints.push({ x: L, y: F });
       }
       
@@ -164,7 +164,8 @@
               title: {
                 display: true,
                 text: 'Force F (N)'
-              }
+              },
+              min: 0
             }
           },
           plugins: {
@@ -177,6 +178,7 @@
         }
       });
     }
+
     /* -----------------------------
        Topic Arrays
     ----------------------------- */
@@ -187,9 +189,9 @@
         difficulty: "easy",
         type: "numeric_multi",
         question: function() {
-          let km = (Math.random() * 10 + 5).toFixed(1);
-          let m = (km * 1000).toFixed(0);
-          let cm = (km * 100000).toFixed(0);
+          const km = (Math.random() * 10 + 5).toFixed(1);
+          const m = (km * 1000).toFixed(0);
+          const cm = (km * 100000).toFixed(0);
           return {
             text: `A runner completes a race of ${km} km. Express this distance in both meters and centimeters. Explain your conversion process.`,
             answer: [m + " m", cm + " cm"],
@@ -205,8 +207,8 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let F = (Math.random() * 900 + 100).toFixed(0);
-          let dynes = (F * 1e5).toFixed(0);
+          const F = (Math.random() * 900 + 100).toFixed(0);
+          const dynes = (F * 1e5).toFixed(0);
           return {
             text: `Convert a force of ${F} N into dynes. Explain the conversion factor used.`,
             answer: dynes + " dynes",
@@ -219,8 +221,8 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let densitySI = (Math.random() * 1000 + 500).toFixed(0);
-          let densityCGS = (densitySI / 1000).toFixed(3);
+          const densitySI = (Math.random() * 1000 + 500).toFixed(0);
+          const densityCGS = (densitySI / 1000).toFixed(3);
           return {
             text: `A substance has a density of ${densitySI} kg/m³. Convert this density to g/cm³. Explain the conversion.`,
             answer: densityCGS + " g/cm³",
@@ -233,9 +235,9 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let V = (Math.random() * 450 + 50).toFixed(0);
-          let dV = (V * (Math.random() * 0.1 + 0.01)).toFixed(1);
-          let percent = ((dV / V) * 100).toFixed(1);
+          const V = (Math.random() * 450 + 50).toFixed(0);
+          const dV = (V * (Math.random() * 0.1 + 0.01)).toFixed(1);
+          const percent = ((dV / V) * 100).toFixed(1);
           return {
             text: `A measurement yields a value of ${V} with an absolute uncertainty of ${dV}. Calculate the percentage uncertainty. Explain the calculation.`,
             answer: percent + " %",
@@ -248,8 +250,8 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let C = (Math.random() * 60 - 20).toFixed(1);
-          let K = (parseFloat(C) + 273.15).toFixed(2);
+          const C = (Math.random() * 60 - 20).toFixed(1);
+          const K = (parseFloat(C) + 273.15).toFixed(2);
           return {
             text: `Convert a temperature of ${C} °C to Kelvin. Explain the conversion formula.`,
             answer: K + " K",
@@ -257,16 +259,15 @@
           };
         }
       },
-      // Additional Topic 1 questions (from older versions)
       {
         topic: 1,
         difficulty: "easy",
         type: "equation",
         question: function() {
-          const km = 3.2, m = km * 1000;
+          const km = 3.2, m = (km * 1000).toFixed(0);
           return { 
             text: `Convert ${km} km to meters.`,
-            answer: m.toFixed(0),
+            answer: m,
             modelAnswer: `1 km = 1000 m; thus, ${km} km = ${m} m.`
           };
         }
@@ -276,10 +277,10 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          const grams = 5000, kg = grams / 1000;
+          const grams = 5000, kg = (grams / 1000).toFixed(1);
           return { 
             text: `Express ${grams} g in kilograms.`,
-            answer: kg.toFixed(1),
+            answer: kg,
             modelAnswer: `1 kg = 1000 g; therefore, ${grams} g = ${kg} kg.`
           };
         }
@@ -289,11 +290,11 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          const km = 60, hr = 1, mps = (km * 1000) / (hr * 3600);
+          const km = 60, hr = 1, mps = ((km * 1000) / (hr * 3600)).toFixed(2);
           return { 
             text: `A car travels ${km} km in ${hr} hour. What is its speed in m/s?`,
-            answer: mps.toFixed(2),
-            modelAnswer: `Speed = 60,000 m / 3600 s ≈ ${mps.toFixed(2)} m/s.`
+            answer: mps,
+            modelAnswer: `Speed = 60,000 m / 3600 s ≈ ${mps} m/s.`
           };
         }
       },
@@ -303,11 +304,11 @@
         type: "equation",
         question: function() {
           const mass_g = 2000, volume_cm3 = 500;
-          const density = (mass_g / 1000) / (volume_cm3 / 1e6);
+          const density = ((mass_g / 1000) / (volume_cm3 / 1e6)).toFixed(0);
           return { 
             text: `A substance has ${mass_g} g and occupies ${volume_cm3} cm³. Calculate its density in kg/m³.`,
-            answer: density.toFixed(0),
-            modelAnswer: `Density = (mass in kg)/(volume in m³) = (${mass_g/1000} kg)/(${volume_cm3/1e6} m³) ≈ ${density.toFixed(0)} kg/m³.`
+            answer: density + " kg/m³",
+            modelAnswer: `Density = (mass in kg)/(volume in m³) = (${mass_g/1000} kg)/(${volume_cm3/1e6} m³) ≈ ${density} kg/m³.`
           };
         }
       },
@@ -406,14 +407,14 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          const u = Math.floor(Math.random() * 10 + 5),
-                a = Math.floor(Math.random() * 4 + 1),
-                t = Math.floor(Math.random() * 4 + 2),
-                s = u * t + 0.5 * a * t * t;
+          const u = Math.floor(Math.random() * 10 + 5);
+          const a = Math.floor(Math.random() * 4 + 1);
+          const t = Math.floor(Math.random() * 4 + 2);
+          const s = (u * t + 0.5 * a * t * t).toFixed(1);
           return { 
             text: `A body starts at ${u} m/s and accelerates at ${a} m/s² for ${t} s. Find its displacement.`,
-            answer: s.toFixed(1),
-            modelAnswer: `Displacement = ut + 0.5at² ≈ ${s.toFixed(1)} m.`
+            answer: s + " m",
+            modelAnswer: `Displacement = ut + 0.5at² ≈ ${s} m.`
           };
         }
       },
@@ -422,10 +423,10 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let u = (Math.random() * 10 + 10).toFixed(1);
-          let g = 9.81;
-          let t_max = (u / g).toFixed(2);
-          let h_max = (0.5 * u * u / g).toFixed(2);
+          const u = (Math.random() * 10 + 10).toFixed(1);
+          const g = 9.81;
+          const t_max = (u / g).toFixed(2);
+          const h_max = (0.5 * u * u / g).toFixed(2);
           return {
             text: `A ball is thrown vertically upwards with an initial speed of ${u} m/s. Calculate: (a) time to reach maximum height and (b) the maximum height.`,
             answer: [t_max + " s", h_max + " m"],
@@ -441,9 +442,9 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let h = (Math.random() * 20 + 10).toFixed(1);
-          let g = 9.81;
-          let t = (Math.sqrt(2 * h / g)).toFixed(2);
+          const h = (Math.random() * 20 + 10).toFixed(1);
+          const g = 9.81;
+          const t = (Math.sqrt(2 * h / g)).toFixed(2);
           return {
             text: `An object is dropped from ${h} m. Calculate the time to hit the ground.`,
             answer: t + " s",
@@ -456,11 +457,11 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let h = (Math.random() * 15 + 5).toFixed(1);
-          let g = 9.81;
-          let t = Math.sqrt(2 * h / g).toFixed(2);
-          let u = (Math.random() * 10 + 5).toFixed(1);
-          let d = (u * t).toFixed(2);
+          const h = (Math.random() * 15 + 5).toFixed(1);
+          const g = 9.81;
+          const t = (Math.sqrt(2 * h / g)).toFixed(2);
+          const u = (Math.random() * 10 + 5).toFixed(1);
+          const d = (u * t).toFixed(2);
           return {
             text: `An object is launched horizontally from a ${h} m cliff with speed ${u} m/s. Find (a) time to hit the ground and (b) horizontal distance traveled.`,
             answer: [t + " s", d + " m"],
@@ -476,10 +477,10 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let u = (Math.random() * 20 + 20).toFixed(1);
-          let t = (Math.random() * 3 + 2).toFixed(1);
-          let a = (u / t).toFixed(2);
-          let s = (0.5 * u * t).toFixed(2);
+          const u = (Math.random() * 20 + 20).toFixed(1);
+          const t = (Math.random() * 3 + 2).toFixed(1);
+          const a = (u / t).toFixed(2);
+          const s = (0.5 * u * t).toFixed(2);
           return {
             text: `A vehicle decelerates from ${u} m/s to rest in ${t} s. Calculate (a) deceleration and (b) distance traveled.`,
             answer: [a + " m/s²", s + " m"],
@@ -495,10 +496,10 @@
         difficulty: "hard",
         type: "equation",
         question: function() {
-          let u = (Math.random() * 10 + 20).toFixed(1);
-          let angle = (Math.random() * 20 + 20).toFixed(1);
-          let g = 9.81;
-          let range = (u * u * Math.sin(2 * angle * Math.PI / 180) / g).toFixed(2);
+          const u = (Math.random() * 10 + 20).toFixed(1);
+          const angle = (Math.random() * 20 + 20).toFixed(1);
+          const g = 9.81;
+          const range = (u * u * Math.sin(2 * angle * Math.PI / 180) / g).toFixed(2);
           return {
             text: `A projectile is launched at ${u} m/s at ${angle}°. Calculate its horizontal range.`,
             answer: range + " m",
@@ -571,11 +572,11 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let m = (Math.random() * 20 + 10).toFixed(1);
-          let F = (Math.random() * 100 + 50).toFixed(1);
-          let f = (Math.random() * F * 0.5).toFixed(1);
-          let netForce = F - f;
-          let a = (netForce / m).toFixed(2);
+          const m = (Math.random() * 20 + 10).toFixed(1);
+          const F = (Math.random() * 100 + 50).toFixed(1);
+          const f = (Math.random() * F * 0.5).toFixed(1);
+          const netForce = F - f;
+          const a = (netForce / m).toFixed(2);
           return {
             text: `A force of ${F} N is applied to a ${m} kg object while friction of ${f} N opposes it. Calculate the net acceleration.`,
             answer: a + " m/s²",
@@ -588,11 +589,11 @@
         difficulty: "hard",
         type: "numeric_multi",
         question: function() {
-          let m1 = (Math.random() * 5 + 1).toFixed(1);
-          let m2 = (Math.random() * 5 + 1).toFixed(1);
-          let u1 = (Math.random() * 10 + 5).toFixed(1);
-          let u2 = (Math.random() * 10).toFixed(1);
-          let v1 = (((m1 - m2) / (parseFloat(m1) + parseFloat(m2))) * u1 + ((2 * m2) / (parseFloat(m1) + parseFloat(m2))) * u2).toFixed(2);
+          const m1 = (Math.random() * 5 + 1).toFixed(1);
+          const m2 = (Math.random() * 5 + 1).toFixed(1);
+          const u1 = (Math.random() * 10 + 5).toFixed(1);
+          const u2 = (Math.random() * 10).toFixed(1);
+          const v1 = (((m1 - m2) / (parseFloat(m1) + parseFloat(m2))) * u1 + ((2 * m2) / (parseFloat(m1) + parseFloat(m2))) * u2).toFixed(2);
           return {
             text: `Two objects (masses ${m1} kg and ${m2} kg) moving at ${u1} m/s and ${u2} m/s collide elastically. Find the final speed of the ${m1} kg object.`,
             answer: v1 + " m/s",
@@ -605,11 +606,11 @@
         difficulty: "easy",
         type: "numeric_multi",
         question: function() {
-          let m1 = (Math.random() * 10 + 5).toFixed(1);
-          let m2 = (Math.random() * 10 + 5).toFixed(1);
-          let u1 = (Math.random() * 10 + 10).toFixed(1);
-          let u2 = (Math.random() * 5).toFixed(1);
-          let finalV = ((m1 * u1 + m2 * u2) / (parseFloat(m1) + parseFloat(m2))).toFixed(2);
+          const m1 = (Math.random() * 10 + 5).toFixed(1);
+          const m2 = (Math.random() * 10 + 5).toFixed(1);
+          const u1 = (Math.random() * 10 + 10).toFixed(1);
+          const u2 = (Math.random() * 5).toFixed(1);
+          const finalV = ((m1 * u1 + m2 * u2) / (parseFloat(m1) + parseFloat(m2))).toFixed(2);
           return {
             text: `A ${m1} kg object moving at ${u1} m/s collides inelastically with a ${m2} kg object at ${u2} m/s. Find their common final velocity.`,
             answer: finalV + " m/s",
@@ -622,11 +623,11 @@
         difficulty: "hard",
         type: "equation",
         question: function() {
-          let F = (Math.random() * 20 + 10).toFixed(1);
-          let r = (Math.random() * 0.5 + 0.5).toFixed(2);
-          let I = (Math.random() * 2 + 1).toFixed(2);
-          let torque = (F * r).toFixed(2);
-          let alpha = (torque / I).toFixed(2);
+          const F = (Math.random() * 20 + 10).toFixed(1);
+          const r = (Math.random() * 0.5 + 0.5).toFixed(2);
+          const I = (Math.random() * 2 + 1).toFixed(2);
+          const torque = (F * r).toFixed(2);
+          const alpha = (torque / I).toFixed(2);
           return {
             text: `A force of ${F} N is applied perpendicularly at ${r} m from the axis of an object (I = ${I} kg·m²). Calculate the angular acceleration.`,
             answer: alpha + " rad/s²",
@@ -639,12 +640,12 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let m = (Math.random() * 20 + 5).toFixed(1);
-          let angle = (Math.random() * 20 + 10).toFixed(1);
-          let d = (Math.random() * 10 + 2).toFixed(1);
-          let g = 9.8;
-          let a = (g * Math.sin(angle * Math.PI / 180)).toFixed(2);
-          let v = (Math.sqrt(2 * a * d)).toFixed(2);
+          const m = (Math.random() * 20 + 5).toFixed(1);
+          const angle = (Math.random() * 20 + 10).toFixed(1);
+          const d = (Math.random() * 10 + 2).toFixed(1);
+          const g = 9.8;
+          const a = (g * Math.sin(angle * Math.PI / 180)).toFixed(2);
+          const v = (Math.sqrt(2 * a * d)).toFixed(2);
           return {
             text: `A ${m} kg block slides down a ${angle}° frictionless slope for ${d} m. Find its speed at the bottom.`,
             answer: v + " m/s",
@@ -685,7 +686,7 @@
         difficulty: "easy",
         type: "definition",
         question: "State what is meant by the centre of gravity of an object.",
-        modelAnswer: "The point where all weigth of an object can be see to act",
+        modelAnswer: "The point where all the weight of an object appears to act.",
         keywords: [["point", "location", "place"], ["weight"], ["act", "work", "occur"]]
       },
       {
@@ -721,9 +722,9 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let h = (Math.random() * 10 + 5).toFixed(1);
-          let rho = 1000, g = 9.81;
-          let pressure = (rho * g * h).toFixed(0);
+          const h = (Math.random() * 10 + 5).toFixed(1);
+          const rho = 1000, g = 9.81;
+          const pressure = (rho * g * h).toFixed(0);
           return {
             text: `Calculate the hydrostatic pressure at a depth of ${h} m in water.`,
             answer: pressure + " Pa",
@@ -736,11 +737,11 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let A = (Math.random() * 1000 + 500).toFixed(0);
-          let h = (Math.random() * 4 + 2).toFixed(1);
-          let rho = 1000, g = 9.81;
-          let A_m2 = A / 10000;
-          let force = (rho * g * h * A_m2).toFixed(1);
+          const A = (Math.random() * 1000 + 500).toFixed(0);
+          const h = (Math.random() * 4 + 2).toFixed(1);
+          const rho = 1000, g = 9.81;
+          const A_m2 = A / 10000;
+          const force = (rho * g * h * A_m2).toFixed(1);
           return {
             text: `A container with a base area of ${A} cm² is filled with water to a height of ${h} m. Calculate the force on its base.`,
             answer: force + " N",
@@ -753,10 +754,10 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let V = (Math.random() * 500 + 100).toFixed(0);
-          let rho = 1000, g = 9.81;
-          let V_m3 = V / 1e6;
-          let buoyant = (rho * g * V_m3).toFixed(2);
+          const V = (Math.random() * 500 + 100).toFixed(0);
+          const rho = 1000, g = 9.81;
+          const V_m3 = V / 1e6;
+          const buoyant = (rho * g * V_m3).toFixed(2);
           return {
             text: `An object displaces ${V} cm³ of water. Calculate its buoyant force using Archimedes' principle.`,
             answer: buoyant + " N",
@@ -769,9 +770,9 @@
         difficulty: "hard",
         type: "numeric_multi",
         question: function() {
-          let V_g = (Math.random() * 60 + 20).toFixed(0);
-          let d_g = 1.3, d_w = 1.0, d_mix = 1.1;
-          let V_w = (((d_g - d_mix) / (d_mix - d_w)) * V_g).toFixed(1);
+          const V_g = (Math.random() * 60 + 20).toFixed(0);
+          const d_g = 1.3, d_w = 1.0, d_mix = 1.1;
+          const V_w = (((d_g - d_mix) / (d_mix - d_w)) * V_g).toFixed(1);
           return {
             text: `A student has ${V_g} cm³ of glycerine (density = 1.3 g/cm³). How much water (density = 1.0 g/cm³) must be added to get a mixture density of 1.1 g/cm³?`,
             answer: V_w + " cm³",
@@ -784,10 +785,10 @@
         difficulty: "hard",
         type: "equation",
         question: function() {
-          let F_small = (Math.random() * 200 + 100).toFixed(0);
-          let A_small = (Math.random() * 50 + 50).toFixed(0);
-          let A_large = (Math.random() * 200 + 100).toFixed(0);
-          let F_large = (F_small * (A_large / A_small)).toFixed(1);
+          const F_small = (Math.random() * 200 + 100).toFixed(0);
+          const A_small = (Math.random() * 50 + 50).toFixed(0);
+          const A_large = (Math.random() * 200 + 100).toFixed(0);
+          const F_large = (F_small * (A_large / A_small)).toFixed(1);
           return {
             text: `In a hydraulic press, if ${F_small} N is applied on a small piston of area ${A_small} cm², what is the force on a large piston of area ${A_large} cm²?`,
             answer: F_large + " N",
@@ -840,10 +841,10 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let m = (Math.random() * 10 + 5).toFixed(1);
-          let h = (Math.random() * 10 + 5).toFixed(1);
-          let g = 9.81;
-          let GPE = (m * g * h).toFixed(1);
+          const m = (Math.random() * 10 + 5).toFixed(1);
+          const h = (Math.random() * 10 + 5).toFixed(1);
+          const g = 9.81;
+          const GPE = (m * g * h).toFixed(1);
           return {
             text: `Calculate the gravitational potential energy of a ${m} kg object raised to ${h} m.`,
             answer: GPE + " J",
@@ -856,9 +857,9 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let W = (Math.random() * 500 + 200).toFixed(0);
-          let t = (Math.random() * 10 + 5).toFixed(1);
-          let P = (W / t).toFixed(1);
+          const W = (Math.random() * 500 + 200).toFixed(0);
+          const t = (Math.random() * 10 + 5).toFixed(1);
+          const P = (W / t).toFixed(1);
           return {
             text: `If ${W} J of work is done in ${t} s, calculate the power output.`,
             answer: P + " W",
@@ -871,9 +872,9 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let k = (Math.random() * 200 + 100).toFixed(0);
-          let x = (Math.random() * 0.1 + 0.05).toFixed(3);
-          let energy = (0.5 * k * x * x).toFixed(3);
+          const k = (Math.random() * 200 + 100).toFixed(0);
+          const x = (Math.random() * 0.1 + 0.05).toFixed(3);
+          const energy = (0.5 * k * x * x).toFixed(3);
           return {
             text: `A spring with constant ${k} N/m is compressed by ${x} m. Calculate the stored energy.`,
             answer: energy + " J",
@@ -886,15 +887,15 @@
         difficulty: "hard",
         type: "equation",
         question: function() {
-          let F = (Math.random() * 50 + 50).toFixed(0);
-          let d = (Math.random() * 10 + 5).toFixed(1);
-          let reduction = (Math.random() * 0.3 + 0.2).toFixed(2);
-          let effectiveForce = F * (1 - reduction);
-          let work = (effectiveForce * d).toFixed(1);
+          const F = (Math.random() * 50 + 50).toFixed(0);
+          const d = (Math.random() * 10 + 5).toFixed(1);
+          const reduction = (Math.random() * 0.3 + 0.2).toFixed(2);
+          const effectiveForce = (F * (1 - reduction)).toFixed(1);
+          const work = (effectiveForce * d).toFixed(1);
           return {
-            text: `A force of ${F} N acts over ${d} m, but friction reduces the force by ${ (reduction * 100).toFixed(0) }%. Calculate the net work done.`,
+            text: `A force of ${F} N acts over ${d} m, but friction reduces the force by ${(reduction * 100).toFixed(0)}%. Calculate the net work done.`,
             answer: work + " J",
-            modelAnswer: `Effective force ≈ ${effectiveForce.toFixed(1)} N, so work ≈ ${work} J.`
+            modelAnswer: `Effective force ≈ ${effectiveForce} N, so work ≈ ${work} J.`
           };
         }
       },
@@ -903,10 +904,10 @@
         difficulty: "hard",
         type: "equation",
         question: function() {
-          let m = (Math.random() * 5 + 1).toFixed(1);
-          let h = (Math.random() * 10 + 5).toFixed(1);
-          let g = 9.81;
-          let v = Math.sqrt(2 * g * h).toFixed(2);
+          const m = (Math.random() * 5 + 1).toFixed(1);
+          const h = (Math.random() * 10 + 5).toFixed(1);
+          const g = 9.81;
+          const v = (Math.sqrt(2 * g * h)).toFixed(2);
           return {
             text: `An object of ${m} kg is dropped from ${h} m. Calculate its impact speed using energy conservation.`,
             answer: v + " m/s",
@@ -921,11 +922,11 @@
         question: function() {
           const m = Math.floor(Math.random() * 10 + 1);
           const v = Math.floor(Math.random() * 10 + 1);
-          const KE = 0.5 * m * v * v;
+          const KE = (0.5 * m * v * v).toFixed(1);
           return { 
             text: `Calculate the kinetic energy of a ${m} kg object moving at ${v} m/s.`,
-            answer: KE.toFixed(1),
-            modelAnswer: `KE ≈ ${KE.toFixed(1)} J.`
+            answer: KE,
+            modelAnswer: `KE ≈ ${KE} J.`
           };
         }
       },
@@ -1021,28 +1022,27 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let k = (Math.random() * 200 + 100).toFixed(0);
-          let F = (Math.random() * 50 + 20).toFixed(0);
-          let extension = (F / k).toFixed(3);
+          const kVal = (Math.random() * 200 + 100).toFixed(0);
+          const F = (Math.random() * 50 + 20).toFixed(0);
+          const extension = (F / kVal).toFixed(3);
           return {
-            text: `A spring with constant ${k} N/m is pulled with a force of ${F} N. Calculate its extension.`,
+            text: `A spring with constant ${kVal} N/m is pulled with a force of ${F} N. Calculate its extension.`,
             answer: extension + " m",
             modelAnswer: `Using Hooke's law, x = F/k ≈ ${extension} m.`
           };
         }
       },
-      
       {
         topic: 6,
         difficulty: "hard",
         type: "equation",
         question: function() {
-          let L = (Math.random() * 100 + 50).toFixed(0);
-          let A = (Math.random() * 0.001 + 0.0005).toFixed(6);
-          let F = (Math.random() * 1000 + 500).toFixed(0);
-          let E = 200e9;
-          let strain = F / (E * A);
-          let extension = ((L / 100) * strain).toFixed(6);
+          const L = (Math.random() * 100 + 50).toFixed(0);
+          const A = (Math.random() * 0.001 + 0.0005).toFixed(6);
+          const F = (Math.random() * 1000 + 500).toFixed(0);
+          const E = 200e9;
+          const strain = F / (E * A);
+          const extension = ((L / 100) * strain).toFixed(6);
           return {
             text: `A rod (${L} cm long, area ${A} m²) is under a force of ${F} N. With E = 200 GPa, calculate its extension.`,
             answer: extension + " m",
@@ -1069,15 +1069,13 @@
           // Build the HTML for the graph (it will be inserted into the diagram container)
           const imageHtml = `<canvas id="${canvasId}" width="600" height="400"></canvas>`;
           
-          // After the question loads and the canvas is available in the DOM,
-          // schedule drawing the chart using our drawSpringChart function.
-          // (A short timeout ensures that the element is rendered.)
+          // Increase timeout delay to ensure canvas is rendered
           setTimeout(() => {
             drawSpringChart(canvasId, k, L0);
           }, 700);
           
           return {
-            text: `A force vs. extension graph for a spring is shown below. The relationship follows Hooke’s Law in the form F = k (L - L₀), where k is the spring constant, and L₀ is the extension at which the force becomes zero. Determine the spring constant k from the graph.`,
+            text: `A force vs. extension graph for a spring is shown below. The relationship follows Hooke’s Law in the form F = k (L - L₀), where k is the spring constant and L₀ is the extension at which the force becomes zero. Determine the spring constant k from the graph.`,
             answer: answer,
             modelAnswer: modelAnswer,
             image: imageHtml
@@ -1089,10 +1087,10 @@
         difficulty: "hard",
         type: "equation",
         question: function() {
-          let F = (Math.random() * 500 + 100).toFixed(0);
-          let k_approx = (Math.random() * 100 + 200).toFixed(0);
-          let x = (F / k_approx).toFixed(3);
-          let energy = (0.5 * F * x).toFixed(2);
+          const F = (Math.random() * 500 + 100).toFixed(0);
+          const k_approx = (Math.random() * 100 + 200).toFixed(0);
+          const x = (F / k_approx).toFixed(3);
+          const energy = (0.5 * F * x).toFixed(2);
           return {
             text: `If a material with stiffness ${k_approx} N/m is extended by a force of ${F} N (extension = ${x} m), calculate its stored energy.`,
             answer: energy + " J",
@@ -1113,9 +1111,9 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let deltaL = (Math.random() * 0.05 + 0.01).toFixed(3);
-          let L0 = (Math.random() * 1 + 1).toFixed(2);
-          let strain = (deltaL / L0).toFixed(3);
+          const deltaL = (Math.random() * 0.05 + 0.01).toFixed(3);
+          const L0 = (Math.random() * 1 + 1).toFixed(2);
+          const strain = (deltaL / L0).toFixed(3);
           return {
             text: `A rod of length ${L0} m is extended by ${deltaL} m. Calculate its strain.`,
             answer: strain,
@@ -1176,9 +1174,9 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let T = (Math.random() * 20 + 50).toFixed(1);
-          let mu = (Math.random() * 0.005 + 0.005).toFixed(4);
-          let v = Math.sqrt(T / mu).toFixed(2);
+          const T = (Math.random() * 20 + 50).toFixed(1);
+          const mu = (Math.random() * 0.005 + 0.005).toFixed(4);
+          const v = Math.sqrt(T / mu).toFixed(2);
           return {
             text: `A wave travels along a string under ${T} N tension with linear density ${mu} kg/m. Find its speed.`,
             answer: v + " m/s",
@@ -1191,9 +1189,9 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let v = (Math.random() * 50 + 300).toFixed(1);
-          let f = (Math.random() * 10 + 50).toFixed(1);
-          let lambda = (v / f).toFixed(2);
+          const v = (Math.random() * 50 + 300).toFixed(1);
+          const f = (Math.random() * 10 + 50).toFixed(1);
+          const lambda = (v / f).toFixed(2);
           return {
             text: `A sound wave has speed ${v} m/s and frequency ${f} Hz. Calculate its wavelength.`,
             answer: lambda + " m",
@@ -1206,10 +1204,10 @@
         difficulty: "hard",
         type: "equation",
         question: function() {
-          let f0 = (Math.random() * 10 + 400).toFixed(1);
-          let v = 340;
-          let vs = (Math.random() * 10 + 10).toFixed(1);
-          let f_obs = (f0 * (v / (v - vs))).toFixed(1);
+          const f0 = (Math.random() * 10 + 400).toFixed(1);
+          const v = 340;
+          const vs = (Math.random() * 10 + 10).toFixed(1);
+          const f_obs = (f0 * (v / (v - vs))).toFixed(1);
           return {
             text: `A source emitting ${f0} Hz moves towards an observer at ${vs} m/s. Calculate the observed frequency.`,
             answer: f_obs + " Hz",
@@ -1305,15 +1303,14 @@
           };
         }
       },
-            {
+      {
         topic: 8,
         difficulty: "easy",
         type: "definition",
-        question: "A string 8cm long is fixed at both ends. A point on the sting is moved downwards and then released. Explain how a standing wave is formed on the string.",
-        modelAnswer: "Waves travel along string and reflect at fixed points this causes two waves with the same frequency and speed to and traveling in opposite direction to superpose causing a standing wave",
-        keywords: [["reflect", "bounce"], ["fixed point", "end"], ["two waves", "multiple waves"], ["opposite", "different"]]
+        question: "A string 8cm long is fixed at both ends. A point on the string is moved downwards and then released. Explain how a standing wave is formed on the string.",
+        modelAnswer: "Waves travel along the string and reflect at the fixed ends. The returning wave interferes with the incoming wave, and if their frequencies match, a standing wave is formed.",
+        keywords: [["reflect", "bounce"], ["fixed point", "end"], ["two waves"], ["interfere", "standing"]]
       },
-
       {
         topic: 8,
         difficulty: "hard",
@@ -1335,7 +1332,7 @@
         type: "definition",
         question: "Define a standing wave.",
         modelAnswer: "A standing wave is formed by two waves traveling in opposite directions with the same frequency and similar amplitude.",
-        keywords: [["opposite", "different direction"], ["frequency", "coherent"]]
+        keywords: [["opposite", "different direction"], ["frequency"], ["amplitude"]]
       }
     ];
 
@@ -1393,8 +1390,8 @@
         difficulty: "easy",
         type: "definition",
         question: "State Kirchhoff’s first law.",
-        modelAnswer: "The sum of current(s) into junction = sum of current(s) out of junction.",
-        keywords: [["sum", "total"], ["current"], ["into", "in"], ["out"]]
+        modelAnswer: "The sum of currents entering a junction equals the sum of currents leaving the junction.",
+        keywords: [["sum"], ["current"], ["junction"]]
       },
       {
         topic: 9,
@@ -1412,13 +1409,13 @@
         modelAnswer: "E.m.f. is the energy provided per unit charge by a source (in volts).",
         keywords: [["energy"], ["charge"]]
       },
-       {
+      {
         topic: 9,
         difficulty: "easy",
         type: "definition",
         question: "State Kirchhoff’s first law.",
-        modelAnswer: "sum of currents into junction = sum of currents out of junction ",
-        keywords: [["sum", "total"], ["current"], ["into"], ["equal"]]
+        modelAnswer: "The sum of currents into a junction equals the sum of currents out.",
+        keywords: [["sum"], ["current"], ["junction"]]
       },
       {
         topic: 9,
@@ -1455,14 +1452,14 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          const R1 = Math.floor(Math.random() * 50 + 50),
-                R2 = Math.floor(Math.random() * 50 + 50),
-                Vin = Math.floor(Math.random() * 20 + 10),
-                Vout = Vin * (R2 / (R1 + R2));
+          const R1 = Math.floor(Math.random() * 50 + 50);
+          const R2 = Math.floor(Math.random() * 50 + 50);
+          const Vin = Math.floor(Math.random() * 20 + 10);
+          const Vout = (Vin * (R2 / (R1 + R2))).toFixed(1);
           return {
             text: `In a voltage divider with ${R1} Ω and ${R2} Ω resistors and Vin = ${Vin} V, find the voltage across the ${R2} Ω resistor.`,
-            answer: Vout.toFixed(1),
-            modelAnswer: `V_out = Vin×(R2/(R1+R2)) ≈ ${Vout.toFixed(1)} V.`
+            answer: Vout,
+            modelAnswer: `V_out = Vin×(R2/(R1+R2)) ≈ ${Vout} V.`
           };
         }
       },
@@ -1471,13 +1468,13 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          const Vin = Math.floor(Math.random() * 20 + 10),
-                R_total = Math.floor(Math.random() * 100 + 100),
-                I = Vin / R_total;
+          const Vin = Math.floor(Math.random() * 20 + 10);
+          const R_total = Math.floor(Math.random() * 100 + 100);
+          const I = (Vin / R_total).toFixed(2);
           return {
             text: `Find the current in a series circuit with R_total = ${R_total} Ω and Vin = ${Vin} V.`,
-            answer: I.toFixed(2),
-            modelAnswer: `I = Vin/R ≈ ${I.toFixed(2)} A.`
+            answer: I,
+            modelAnswer: `I = Vin/R ≈ ${I} A.`
           };
         }
       },
@@ -1486,13 +1483,13 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          const I = Math.floor(Math.random() * 5 + 1),
-                R = Math.floor(Math.random() * 100 + 50),
-                P = I * I * R;
+          const I = Math.floor(Math.random() * 5 + 1);
+          const R = Math.floor(Math.random() * 100 + 50);
+          const P = (I * I * R).toFixed(1);
           return {
             text: `Calculate the power in a ${R} Ω resistor with current ${I} A.`,
-            answer: P.toFixed(1),
-            modelAnswer: `P = I²×R ≈ ${P.toFixed(1)} W.`
+            answer: P,
+            modelAnswer: `P = I²×R ≈ ${P} W.`
           };
         }
       },
@@ -1501,14 +1498,14 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          const R1 = Math.floor(Math.random() * 50 + 50),
-                R2 = Math.floor(Math.random() * 50 + 50),
-                R3 = Math.floor(Math.random() * 50 + 50),
-                R_total = R1 + R2 + R3;
+          const R1 = Math.floor(Math.random() * 50 + 50);
+          const R2 = Math.floor(Math.random() * 50 + 50);
+          const R3 = Math.floor(Math.random() * 50 + 50);
+          const R_total = R1 + R2 + R3;
           return {
             text: `Three resistors of ${R1} Ω, ${R2} Ω, and ${R3} Ω are in series. Find R_total.`,
             answer: R_total.toFixed(1),
-            modelAnswer: `R_total = ${R1}+${R2}+${R3} = ${R_total} Ω.`
+            modelAnswer: `R_total = ${R1} + ${R2} + ${R3} = ${R_total} Ω.`
           };
         }
       },
@@ -1517,11 +1514,11 @@
         difficulty: "hard",
         type: "numeric_multi",
         question: function() {
-          const R1 = 100, R2 = 200, R3 = 300, Vin = 12,
-                R_total = R1 + R2 + R3,
-                I = Vin / R_total,
-                V_R2 = I * R2,
-                power_R2 = (V_R2 * V_R2) / R2;
+          const R1 = 100, R2 = 200, R3 = 300, Vin = 12;
+          const R_total = R1 + R2 + R3;
+          const I = Vin / R_total;
+          const V_R2 = I * R2;
+          const power_R2 = (V_R2 * V_R2) / R2;
           return {
             text: `In a series circuit with resistors ${R1} Ω, ${R2} Ω, and ${R3} Ω and Vin = ${Vin} V, calculate: (a) voltage across ${R2} Ω, (b) power dissipated in it.`,
             answer: [V_R2.toFixed(2)+" V", power_R2.toFixed(2)+" W"],
@@ -1557,8 +1554,8 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let A = Math.floor(Math.random() * 50 + 200);
-          let finalA = A - 4;
+          const A = Math.floor(Math.random() * 50 + 200);
+          const finalA = A - 4;
           return {
             text: `A nucleus with mass number ${A} undergoes alpha decay. What is its final mass number?`,
             answer: finalA.toString(),
@@ -1571,9 +1568,9 @@
         difficulty: "easy",
         type: "equation",
         question: function() {
-          let Z = Math.floor(Math.random() * 20 + 10);
-          let A = Math.floor(Math.random() * 30 + parseFloat(Z) + 10);
-          let finalZ = Z + 1;
+          const Z = Math.floor(Math.random() * 20 + 10);
+          const A = Math.floor(Math.random() * 30 + parseFloat(Z) + 10);
+          const finalZ = Z + 1;
           return {
             text: `A nucleus with proton number ${Z} and mass number ${A} undergoes beta-minus decay. What is its new proton number?`,
             answer: finalZ.toString(),
@@ -1764,7 +1761,9 @@
           return { 
             text: "A nucleus with mass number 210 and atomic number 84 undergoes β– decay followed by alpha decay. Calculate the final mass number and atomic number.",
             answer: ["206", "83"],
-            modelAnswer: ["After β– decay, nucleon number remains 210; then alpha decay reduces mass number by 4 and atomic number by about 1 (depending on proton conversion) resulting in 206 and 83."]
+            modelAnswer: [
+              "After β– decay, nucleon number remains 210; then alpha decay reduces mass number by 4 and atomic number by about 1 resulting in 206 and 83."
+            ]
           };
         }
       }
@@ -1845,20 +1844,12 @@
       return { topics: modes, wholeDefs, wholeEqs };
     }
     
+    // Build question pool without evaluating the dynamic question functions
     function buildQuestionPool() {
       const { topics: topicModes, wholeDefs, wholeEqs } = getCheckedTopicModes();
       const diff = getSelectedDifficulty();
       let filtered = [];
-      const expandedBank = questionBank.map(q => {
-        if (typeof q.question === "function") {
-          const built = q.question();
-          return { ...q, text: built.text, answer: built.answer, modelAnswer: built.modelAnswer, image: built.image || null };
-        } else {
-          return { ...q, text: q.question };
-        }
-      });
-      
-      expandedBank.forEach(q => {
+      questionBank.forEach(q => {
         let matched = false;
         const isDef = (q.type === "definition");
         const isEq = (q.type === "equation" || q.type === "numeric" || q.type === "numeric_multi" || q.type === "numeric_dynamic");
@@ -1871,13 +1862,11 @@
         }
         if (matched) filtered.push(q);
       });
-      
       if (diff === "easy") {
         filtered = filtered.filter(q => q.difficulty === "easy" || !q.difficulty);
       } else if (diff === "hard") {
         filtered = filtered.filter(q => q.difficulty === "hard");
       }
-      
       return filtered;
     }
     
@@ -1919,9 +1908,16 @@
       loadQuestion(chosen);
     }
     
+    // When loading a question, if it is dynamic (question is a function), re-evaluate it now
     function loadQuestion(q) {
       currentQuestion = q;
-      answeredCurrent = false;
+      if (typeof q.question === "function") {
+        const built = q.question();
+        q.text = built.text;
+        q.answer = built.answer;
+        q.modelAnswer = built.modelAnswer;
+        q.image = built.image || null;
+      }
       document.getElementById("diagramContainer").innerHTML = "";
       document.getElementById("answerInputs").innerHTML = "";
       document.getElementById("feedback").innerText = "";
