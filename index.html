@@ -344,7 +344,9 @@ function drawOscilloscopeChart(canvasId, cycles, timeBase) {
         difficulty: "easy",
         type: "equation",
         question: function() {
-          const km = 3.2, m = (km * 1000).toFixed(0);
+          const km = (Math.random() * (10 - 1) + 1).toFixed(3);  // 1.0 up to (but not including) 10.0
+const m  = (km * 1000).toFixed(0);       // convert to metres, no decimals
+
           return { 
             text: `Convert ${km} km to meters.`,
             answer: m,
@@ -357,7 +359,8 @@ function drawOscilloscopeChart(canvasId, cycles, timeBase) {
         difficulty: "easy",
         type: "equation",
         question: function() {
-          const grams = 5000, kg = (grams / 1000).toFixed(1);
+          const grams =  Math.floor(Math.random() * 9001) + 1000;
+          const kg = (grams / 1000).toFixed(3);
           return { 
             text: `Express ${grams} g in kilograms.`,
             answer: kg,
@@ -367,23 +370,26 @@ function drawOscilloscopeChart(canvasId, cycles, timeBase) {
       },
       {
         topic: 1,
-        difficulty: "easy",
+        difficulty: "hard",
         type: "equation",
         question: function() {
-          const km = 60, hr = 1, mps = ((km * 1000) / (hr * 3600)).toFixed(2);
-          return { 
-            text: `A car travels ${km} km in ${hr} hour. What is its speed in m/s?`,
-            answer: mps,
-            modelAnswer: `Speed = 60,000 m / 3600 s ≈ ${mps} m/s.`
-          };
-        }
+          const km = (Math.random() * (100 - 10) + 10).toFixed(0);
+         const hr = (Math.random() * (10 - 1) + 1).toFixed(1); 
+           const mps = ((parseFloat(km) * 1000) / (parseFloat(hr) * 3600)).toFixed(2);
+          return {
+    text: `A car travels ${km} km in ${hr} hour. What is its speed in m/s?`,
+    answer: mps,
+    modelAnswer: `Speed = ( ${km}×1000 m ) / ( ${hr}×3600 s ) ≈ ${mps} m/s.`
+  };
+}
       },
       {
         topic: 1,
         difficulty: "easy",
         type: "equation",
         question: function() {
-          const mass_g = 2000, volume_cm3 = 500;
+          const mass_g = (Math.random() * (100000 - 2000) + 2000).toFixed(0); 
+          const volume_cm3 = (Math.random() * (50000 - 500) + 500).toFixed(0);
           const density = ((mass_g / 1000) / (volume_cm3 / 1e6)).toFixed(0);
           return { 
             text: `A substance has ${mass_g} g and occupies ${volume_cm3} cm³. Calculate its density in kg/m³.`,
@@ -469,12 +475,13 @@ function drawOscilloscopeChart(canvasId, cycles, timeBase) {
         difficulty: "hard",
         type: "equation",
         question: function() {
-          const length = 1.20, uncertainty = 0.02;
+          const length =  (Math.random() * (3.5 - 0.5) + .5).toFixed(1); 
+          const uncertainty = (Math.random() * (0.09 - 0.01) + 0.01).toFixed(3);
           const perc = (uncertainty / length) * 100;
           return { 
             text: `An object is measured as ${length} m with an uncertainty of ${uncertainty} m. Calculate the percentage uncertainty.`,
             answer: perc.toFixed(2) + " %",
-            modelAnswer: `Percentage uncertainty = (0.02/1.20)*100 ≈ ${perc.toFixed(2)} %.`
+            modelAnswer: `Percentage uncertainty is calculated by taking the uncertainty in the measurement dividing this by the actual measurement and then multiplying this by 100 to make a percentage = (0.02/1.20)*100 ≈ ${perc.toFixed(2)} %.`
           };
         }
       }
