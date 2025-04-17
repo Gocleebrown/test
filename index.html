@@ -181,6 +181,83 @@
         }
       });
     }
+    // Function to draw an oscilloscope‐style sine wave trace
+function drawOscilloscopeChart(canvasId, cycles, timeBase) {
+  const totalDivisions = 10;                        
+  const totalTime      = timeBase * totalDivisions; 
+  const period         = totalTime / cycles;        
+  const N              = 5;    // minor‐step subdivisions per major division
+
+  const canvas   = document.getElementById(canvasId);
+  const ctx      = canvas.getContext('2d');
+  const samples  = 600;
+  const dataPoints = [];
+  for (let i = 0; i <= samples; i++) {
+    const t = (i / samples) * totalTime;
+    const y = Math.sin(2 * Math.PI * t / period);
+    dataPoints.push({ x: t, y: y });
+  }
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      datasets: [{ data: dataPoints, pointRadius: 0, borderWidth: 2, fill: false, tension: 0 }]
+    },
+    options: {
+      responsive: false,
+      scales: {
+        x: {
+          type: 'linear',
+          title: { display: true, text: 'Div' },
+          min: 0,
+          max: totalTime,
+
+          // 1) Draw ticks every (timeBase ÷ N) ms → minor + major lines
+          ticks: {
+            stepSize: timeBase / N,
+            autoSkip: false,
+            maxTicksLimit: totalDivisions * N + 1,
+
+            // 2) Label only whole‐division lines (0,1,2,3…)
+            callback: value => {
+              const divCount = value / timeBase;
+              return Number.isInteger(divCount) ? divCount : '';
+            }
+          },
+
+          // 3) Colour major vs minor differently (optional)
+          grid: {
+            drawOnChartArea: true,
+            color: ctx => {
+              const divCount = ctx.tick.value / timeBase;
+              return Number.isInteger(divCount)
+                ? 'rgba(0,0,0,0.3)'   // major (darker)
+                : 'rgba(200,0,0,0.1)'; // minor (lighter)
+            },
+            lineWidth: ctx =>
+              Number.isInteger(ctx.tick.value / timeBase) ? 1.5 : 0.5
+          }
+        },
+        y: {
+          title: { display: true, text: 'Voltage (arb. units)' },
+          min: -1.2,
+          max:  1.2,
+          ticks: { stepSize: 1 },
+          grid:  { drawOnChartArea: true, lineWidth: 1 }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        title:  { display: true, text: 'Oscilloscope Trace' }
+      }
+    }
+  });
+}
+
+
+
+ /* ----------------------------- */
+
 
     /* -----------------------------
        Topic Arrays
@@ -1066,7 +1143,7 @@
       const F_applied = Number((Math.random() * 10 + 10).toFixed(0));
       
       // Part (a): The spring constant answer (displayed in N/cm)
-      const answerPart1 = k_num.toFixed(2) + " N/cm";
+      const answerPart1 = (k_num*100).toFixed(2) + " N/m";
       
       // Part (b):
       // Calculate extension in cm: x_cm = F_applied / k_num.
@@ -1082,7 +1159,7 @@
       const answerCombined = [answerPart1, answerPart2];
       
       // Model answers:
-      const modelAnswerPart1 = `Answer (a): Using Hooke's Law, F = k(L - L₀), the gradient of the graph gives k. For this graph, k = ${k_num.toFixed(2)} N/cm.`;
+      const modelAnswerPart1 = `Answer (a): Using Hooke's Law, F = kx, we can use the gradient of the graph to give k, however, you must make sure you do rise over run and not just take one data point as the graph does not go throught the origin. For this graph, k = ${(k_num*100).toFixed(2)} N/m.`;
       const modelAnswerPart2 = `Answer (b): With F = ${F_applied} N, the extension is x = F/k = ${x_cm.toFixed(2)} cm (${x_m.toFixed(4)} m). Converting k to SI units gives k = ${k_SI.toFixed(2)} N/m so the elastic potential energy is E = ½·k·x² ≈ ${energy.toFixed(2)} J.`;
       
       const modelAnswerCombined = [modelAnswerPart1, modelAnswerPart2];
@@ -1098,7 +1175,7 @@
       }, 700);
       
       return {
-        text: `A force vs. extension graph for a spring is shown below. It follows Hooke’s Law: F = k(L - L₀), where k is the spring constant and L₀ is the extension at which force becomes zero.
+        text: `A force vs. extension graph for a spring is shown below. 
 (a) Determine the spring constant k from the graph.
 (b) Determine the elastic potential energy stored when the applied force is ${F_applied} N.`,
         answer: answerCombined,
@@ -1264,8 +1341,32 @@
         question: "Define wavefront.",
         modelAnswer: "A wavefront is a line joining points on a wave that are in phase.",
         keywords: [["line"], ["in phase"]]
-      }
+      },
+      {
+  topic: 7,
+  difficulty: "easy",
+  type: "equation",
+  question: function() {
+    const timeBase = [1, 2, 5][Math.floor(Math.random() * 3)];  // ms/div
+    const cycles  = Math.floor(Math.random() * 2) + 3;         // number of compete waves
+    const totalDivisions = 10;                                 // typical screen width in divisions
+const totalTime      = timeBase * totalDivisions;         // total time across screen (ms)
+const period         = totalTime / cycles;                // ms per cycle
+    const canvasId = "oscChart_" + Math.floor(Math.random() * 1e5);
+    const imageHtml = `<canvas id="${canvasId}" width="600" height="300"></canvas>`;
+    setTimeout(() => {drawOscilloscopeChart(canvasId, cycles, timeBase);
+    }, 100);
+    return {
+text: `The oscilloscope below is set to ${timeBase} ms/division. Determine the wave’s period in ms.`,
+      answer: period.toFixed(1) + " ms",
+      modelAnswer: `Time period is the time for 1 whole waves. To do this fine two points on the graph that you can count the number of divisions. Times this by the time base. Then divide that number by the how many waves (or parts of a wave the two points are apart. T = (10 × ${timeBase} ms) / ${cycles} ≈ ${period.toFixed(1)} ms.`,
+      image: imageHtml
+    };
+  }
+}
+
     ];
+    
 
     // Topic 8: Superposition (including standing wave questions)
     const additionalQuestionsTopic8 = [
