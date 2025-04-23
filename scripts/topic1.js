@@ -204,4 +204,7 @@ const additionalQuestionsTopic1 = [
       return {
         text: `An object is measured as ${length} m with an uncertainty of ${uncertainty} m. Calculate the percentage uncertainty.`,
         answer: perc + " %",
-        modelAnswer: `Percentage uncertainty = (uncertainty ÷ measurement) × 100.\nHere: (${uncertainty} ÷
+             modelAnswer: `Percentage uncertainty = (uncertainty ÷ measurement) × 100.\nHere: (${uncertainty} ÷ ${length}) × 100 = ${perc} %. So the percentage uncertainty is about ${perc} %.`
+    };
+  }
+];
