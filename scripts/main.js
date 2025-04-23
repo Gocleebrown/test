@@ -94,14 +94,6 @@ function buildQuestionPool() {
   return filtered;
 }
 
-// 6) Practice flow
-let score = 0;
-let mixedCount = 0;
-let questionPool = [];
-let answeredCurrent = false;
-let currentQuestion = null;
-let currentAnswers = null;
-
 function startPractice() {
   score = 0;
   document.getElementById("score").innerText = score;
