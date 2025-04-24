@@ -207,5 +207,5 @@ const additionalQuestionsTopic1 = [
              modelAnswer: `Percentage uncertainty = (uncertainty ÷ measurement) × 100.\nHere: (${uncertainty} ÷ ${length}) × 100 = ${perc} %. So the percentage uncertainty is about ${perc} %.`
     };
   }
-  },
+  }
 ];
